@@ -1,23 +1,28 @@
+let y = 500; // Starting circle size
+let canvasCentreX = canvasWidth / 2 // Centre of canvas' x coordinates
+let canvasCentreY = canvasHeight / 2 // Centre of canvas' y coordinates
+let angle = 0
 
-// vocal, drum, bass, and other are volumes ranging from 0 to 100
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
-  background(20);
-  fill(255);
-  
-  // Beak vocals
-  let topBeakOpen = map(vocal, 0, 100, 250, 150);
-  let bottomBeakOpen = map(vocal, 0, 100, 250, 350);
-  triangle(200, 200, 200, 250, 400, topBeakOpen);
-  triangle(200, 250, 200, 300, 400, bottomBeakOpen);
-  
-  // Head
-  ellipse(180, 250, 200, 200);
+  background(0); // Black
+  fill(0); // Black
+  stroke(255); // White
+  strokeWeight(2);
 
-  // Eyes
-  let eyeSize = map(other, 0, 100, 10, 40);
-  ellipse(200, 230, 50, 50);
-  fill(0);
-  ellipse(200, 230, eyeSize, eyeSize);
+  // 5 Rings
+  for(let i = 0; i < 5; i++) {
+    let circleSize = y - (i * 100);
+    ellipse(canvasCentreX, canvasCentreY, circleSize);
+  }
+
+  // Rotating Planet around first ring
+  push(); 
+  translate(canvasCentreX, canvasCentreY);
+  rotate(angle);
+  ellipse(0, -250, 50);
+  pop();
+
+  angle++; // increments angle amount to add movement
 }
 
 
