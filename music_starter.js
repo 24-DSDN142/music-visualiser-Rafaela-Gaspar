@@ -1,28 +1,46 @@
-let y = 500; // Starting circle size
-let canvasCentreX = canvasWidth / 2 // Centre of canvas' x coordinates
-let canvasCentreY = canvasHeight / 2 // Centre of canvas' y coordinates
-let angle = 0
+let gradientBrightness = 0 // Brightness of gradient
+let sunSize = 800; // Size of sun (inner circle)
+let lineThickness = 1.5 // Thickness of drawn lines
+let canvasCentreX = canvasWidth / 2 // Centre of canvas (x coordinates)
+let canvasCentreY = canvasHeight / 2 // Centre of canvas (y coordinates)
+let rotationAngle = [0, 0, 0, 0] // Rotation amounts for each planet
 
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   background(0); // Black
   fill(0); // Black
   stroke(255); // White
-  strokeWeight(2);
+  strokeWeight(lineThickness);
 
-  // 5 Rings
+  // Solar system's sun and 4 rings
   for(let i = 0; i < 5; i++) {
-    let circleSize = y - (i * 100);
+    let circleSize = sunSize - (i * 160);
     ellipse(canvasCentreX, canvasCentreY, circleSize);
   }
 
-  // Rotating Planet around first ring
   push(); 
+  
+  // Rotating Planets around solar system's rings
   translate(canvasCentreX, canvasCentreY);
-  rotate(angle);
-  ellipse(0, -250, 50);
+
+  rotate(rotationAngle[0]);
+  ellipse(0, -160, 50); // Planet 1
+  rotationAngle[0] += 2; // Increments angle value
+  
+  rotate(rotationAngle[1]);
+  ellipse(0, 240, 50); // Planet 2
+  rotationAngle[1] += 0.1; // Increments angle value
+  
+  rotate(rotationAngle[2]);
+  ellipse(0, -320, 50); // Planet 3
+  rotationAngle[2] -= 3; // Increments angle value
+  
+  rotate(rotationAngle[3]);
+  ellipse(0, 400, 50); // Planet 4
+  rotationAngle[3] -= 0.5; // Increments angle value
+
   pop();
 
-  angle++; // increments angle amount to add movement
+  gradientBrightness++;
 }
 
 
