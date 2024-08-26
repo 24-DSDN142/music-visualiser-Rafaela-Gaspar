@@ -16,31 +16,42 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     let circleSize = sunSize - (i * 160);
     ellipse(canvasCentreX, canvasCentreY, circleSize);
   }
-
-  push(); 
   
-  // Rotating Planets around solar system's rings
+  // Rotating Planet 1 around rings
+  push(); 
   translate(canvasCentreX, canvasCentreY);
-
   rotate(rotationAngle[0]);
   ellipse(0, -160, 50); // Planet 1
-  rotationAngle[0] += 2; // Increments angle value
-  
-  rotate(rotationAngle[1]);
-  ellipse(0, 240, 50); // Planet 2
-  rotationAngle[1] += 0.1; // Increments angle value
-  
-  rotate(rotationAngle[2]);
-  ellipse(0, -320, 50); // Planet 3
-  rotationAngle[2] -= 3; // Increments angle value
-  
-  rotate(rotationAngle[3]);
-  ellipse(0, 400, 50); // Planet 4
-  rotationAngle[3] -= 0.5; // Increments angle value
-
   pop();
 
-  gradientBrightness++;
+  // Rotating Planet 2 around rings
+  push(); 
+  translate(canvasCentreX, canvasCentreY);
+  rotate(rotationAngle[1]);
+  ellipse(0, 240, 50); // Planet 2
+  pop();
+
+  // Rotating Planet 3 around rings
+  push(); 
+  translate(canvasCentreX, canvasCentreY);
+  rotate(rotationAngle[2]);
+  ellipse(0, -320, 50); // Planet 3
+  pop();
+
+  // Rotating Planet 4 around rings
+  push(); 
+  translate(canvasCentreX, canvasCentreY);
+  rotate(rotationAngle[3]);
+  ellipse(0, 400, 50); // Planet 4
+  pop();
+  
+  // Increments angle values
+  rotationAngle[0]++; // Planet 1
+  rotationAngle[1] += 2; // Planet 2
+  rotationAngle[2] += 1.3; // Planet 3
+  rotationAngle[3] += 0.5; // Planet 4
+
+  gradientBrightness++; // Increments gradient brightness
 }
 
 
