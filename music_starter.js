@@ -1,48 +1,75 @@
-let gradientBrightness = 0 // Brightness of gradient
-let sunSize = 800; // Size of sun (inner circle)
-let lineThickness = 1.5 // Thickness of drawn lines
 let canvasCentreX = canvasWidth / 2 // Centre of canvas (x coordinates)
 let canvasCentreY = canvasHeight / 2 // Centre of canvas (y coordinates)
+
+let gradientBrightness = 0 // Brightness of gradient
+let lineThickness = 1.5 // Thickness of drawn lines
+let ringSize = 800; // Size of solar system rings
 let rotationAngle = [0, 0, 0, 0] // Rotation amounts for each planet
 
+let sunSize = 140; // Size of sun
+let sunGrowing = true; // Checks whether the sun is growing or shrinking
+let planetSize = 2500; // Size of initial planet
+
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
+  // Drawing appearance
   background(0); // Black
   fill(0); // Black
   stroke(255); // White
   strokeWeight(lineThickness);
 
-  // Solar system's sun and 4 rings
-  for(let i = 0; i < 5; i++) {
-    let circleSize = sunSize - (i * 160);
+  // Solar system's 4 rings
+  for(let i = 0; i < 4; i++) {
+    let circleSize = ringSize - (i * 160);
     ellipse(canvasCentreX, canvasCentreY, circleSize);
   }
   
+  // Sun pulsing
+  ellipse(canvasCentreX, canvasCentreY, sunSize);
+
+  if(sunSize >= 160) {
+    sunGrowing = false;
+  }
+  else if(sunSize <= 140) {
+    sunGrowing = true;
+  }
+
+  if(sunGrowing) {
+    sunSize += 0.2;
+  }
+  else {
+    sunSize -= 0.2;
+  }
+
   // Rotating Planet 1 around rings
   push(); 
   translate(canvasCentreX, canvasCentreY);
   rotate(rotationAngle[0]);
-  ellipse(0, -160, 50); // Planet 1
+  let otherSize = map(other, 80, 90, 60, 80); // Change size of planet using the 'other' volume channel
+  ellipse(0, -160, otherSize); // Planet 1
   pop();
 
   // Rotating Planet 2 around rings
   push(); 
   translate(canvasCentreX, canvasCentreY);
   rotate(rotationAngle[1]);
-  ellipse(0, 240, 50); // Planet 2
+  let bassSize = map(bass, 70, 80, 60, 80); // Change size of planet using the 'bass' volume channel
+  ellipse(0, 240, bassSize); // Planet 2
   pop();
 
   // Rotating Planet 3 around rings
   push(); 
   translate(canvasCentreX, canvasCentreY);
   rotate(rotationAngle[2]);
-  ellipse(0, -320, 50); // Planet 3
+  let vocalSize = map(vocal, 20, 30, 60, 80); // Change size of planet using the 'vocal' volume channel
+  ellipse(0, -320, vocalSize); // Planet 3
   pop();
 
   // Rotating Planet 4 around rings
   push(); 
   translate(canvasCentreX, canvasCentreY);
   rotate(rotationAngle[3]);
-  ellipse(0, 400, 50); // Planet 4
+  let drumSize = map(drum, 30, 50, 60, 80); // Change size of planet using the 'drum' volume channel
+  ellipse(0, 400, drumSize); // Planet 4
   pop();
   
   // Increments angle values
@@ -52,7 +79,33 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   rotationAngle[3] += 0.5; // Planet 4
 
   gradientBrightness++; // Increments gradient brightness
+
+  // Initial planet transition (that will only play once music begins)
+  if(planetSize > 0 && counter > 0) {
+    ellipse(canvasCentreX, canvasCentreY, planetSize);
+    planetSize -= 20;
+  }
+
+  console.log(counter); // Allows you to check counter value in console
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // ORIGINAL CODE BELOW
