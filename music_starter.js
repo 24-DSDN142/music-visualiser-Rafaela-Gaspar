@@ -1,18 +1,21 @@
-let canvasCentreX = canvasWidth / 2 // Centre of canvas (x coordinates)
-let canvasCentreY = canvasHeight / 2 // Centre of canvas (y coordinates)
-
-let gradientBrightness = 0 // Brightness of gradient
-let lineThickness = 1.5 // Thickness of drawn lines
-let ringSize = 800; // Size of solar system rings
-let rotationAngle = [0, 0, 0, 0] // Rotation amounts for each planet
-
-let sunSize = 140; // Size of sun
+let canvasCentreX = canvasWidth / 2; // Centre of canvas (x coordinates)
+let canvasCentreY = canvasHeight / 2; // Centre of canvas (y coordinates)
 let sunGrowing = true; // Checks whether the sun is growing or shrinking
+let firstRun = true; // Checks whether run has been run already
+
+let stars = []; // Array of stars to be drawn
+let starAmount = 400; // Number of stars to be drawn
+
+let lineThickness = 1.5; // Thickness of drawn lines
+let ringSize = 800; // Size of solar system rings
+let sunSize = 140; // Size of sun
 let planetSize = 2500; // Size of initial planet
+let rotationAngle = [0, 0, 0, 0]; // Rotation amounts for each planet
 
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
-  // Drawing appearance
   background(0); // Black
+
+  // Solar system appearance
   fill(0); // Black
   stroke(255); // White
   strokeWeight(lineThickness);
@@ -21,8 +24,34 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   for(let i = 0; i < 4; i++) {
     let circleSize = ringSize - (i * 160);
     ellipse(canvasCentreX, canvasCentreY, circleSize);
+  }  
+
+  strokeWeight(4); // Stars appearance
+
+  // Randomises x and y coordinates for each star in the stars array
+  if(firstRun) {
+    for (let i = 0; i < starAmount; i++) { // Create a number of stars equal to starAmount variable
+      let starX = random(0, canvasWidth); // Randomise x coordinate
+      let starY = random(0, canvasHeight); // Randomise y coordinate
+      stars.push({ x: starX, y: starY, brightness: 0 }); // apply values to stars array
+    }
+    firstRun = false; // Update firstRun so that this code only runs once
   }
-  
+
+  // Draws each star from the array at 125 counter intervals
+  for (let i = 0; i < starAmount; i++) {
+    if (counter > i * (2500 / starAmount)) {
+      stroke(stars[i].brightness);
+      point(stars[i].x, stars[i].y); // draws star
+      stars[i].brightness += 0.2; // Increments star brightness  
+    }
+  }
+
+  // Solar system appearance
+  fill(0); // Black
+  stroke(255); // White
+  strokeWeight(lineThickness);
+
   // Sun pulsing
   ellipse(canvasCentreX, canvasCentreY, sunSize);
 
@@ -78,21 +107,20 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   rotationAngle[2] += 1.3; // Planet 3
   rotationAngle[3] += 0.5; // Planet 4
 
-  gradientBrightness++; // Increments gradient brightness
-
-  // Initial planet transition (that will only play once music begins)
+  // Planet transition that will only play once music begins
   if(planetSize > 0 && counter > 0) {
     ellipse(canvasCentreX, canvasCentreY, planetSize);
     planetSize -= 20;
   }
 
-  console.log(counter); // Allows you to check counter value in console
+  // Allows you to track counter value as music is playing 
+  let seconds = counter
+  
+  if(seconds > 0) {
+    textSize(60);
+    text(nf(seconds, 3, 2), 20, height-20);
+  }
 }
-
-
-
-
-
 
 
 
