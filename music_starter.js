@@ -10,27 +10,70 @@ let lineThickness = 1.5; // Thickness of drawn lines
 let ringSize = 800; // Size of solar system rings
 let sunSize = 140; // Size of sun
 let planetSize = 2500; // Size of initial planet
-let rotationAngle = [0, 0, 0, 0, 0]; // Rotation amounts for each planet
+let rotationAngle = [0, 0, 0, 0, 0]; // Array of rotation amounts for each planet
 let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
 
-
-angleMode(DEGREES); 
-
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   background(0); // Black
-
-  // Solar system appearance
   fill(0); // Black
   stroke(255); // White
   strokeWeight(lineThickness);
 
-  // Solar system's 4 rings
+  drawStars(counter); // Draws the stars
+
+  // Draws solar system's 4 rings
   for(let i = 0; i < 4; i++) {
     let circleSize = ringSize - (i * 160);
+    push();
+    noFill();
     ellipse(canvasCentreX, canvasCentreY, circleSize);
+    pop();
   }  
 
+  drawSun(); // Draws the Sun
+  drawPlanets(words, vocal, drum, bass, other); // Draws the planets
+  drawSpaceship(); // Draws the spaceship
+
+  // Increments angle values to animate planet rotation
+  rotationAngle[0] += 0.5; // Planet 1
+  rotationAngle[1]++; // Planet 2
+  rotationAngle[2] += 0.7; // Planet 3
+  rotationAngle[3] += 0.2; // Planet 4
+  rotationAngle[4]++; // Spaceship
+
+  // Planet transition that will only play once music begins
+  if(planetSize > 0 && counter > 0) {
+    ellipse(canvasCentreX, canvasCentreY, planetSize);
+    planetSize -= 20;
+  }
+
+  displayCounter(counter); // Allows you to track counter value as music is playing 
+
+}
+
+function drawSun() {
+  // Sun
+  ellipse(canvasCentreX, canvasCentreY, sunSize);
+
+  // Sun pulsing
+  if(sunSize >= 160) {
+    sunGrowing = false;
+  }
+  else if(sunSize <= 140) {
+    sunGrowing = true;
+  }
+
+  if(sunGrowing) {
+    sunSize += 0.2;
+  }
+  else {
+    sunSize -= 0.2;
+  }
+}
+
+function drawStars(counter) {
+  push();
   strokeWeight(4); // Stars appearance
 
   // Randomises x and y coordinates for each star in the stars array
@@ -51,29 +94,36 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       stars[i].brightness += 0.2; // Increments star brightness  
     }
   }
+  pop();
+}
 
-  // Solar system appearance
-  fill(0); // Black
-  stroke(255); // White
-  strokeWeight(lineThickness);
+function drawSpaceship() {
+  push(); 
+  translate(canvasCentreX, canvasCentreY);
+  rotate(rotationAngle[4]);
 
-  // Sun pulsing
-  ellipse(canvasCentreX, canvasCentreY, sunSize);
+  // Spaceship Body
+  ellipse(spaceshipX + 25, spaceshipY, 50, 50);
+  rect(spaceshipX, spaceshipY, 50, 60);
+  quad(spaceshipX + 10, spaceshipY + 60, spaceshipX + 40, spaceshipY + 60, spaceshipX + 35, spaceshipY + 80, spaceshipX + 15, spaceshipY + 80);
+  ellipse(spaceshipX + 25, spaceshipY + 30, 20, 20);
+  line(spaceshipX + 20, spaceshipY + 60, spaceshipX + 20, spaceshipY + 80);
+  line(spaceshipX + 30, spaceshipY + 60, spaceshipX + 30, spaceshipY + 80);
 
-  if(sunSize >= 160) {
-    sunGrowing = false;
-  }
-  else if(sunSize <= 140) {
-    sunGrowing = true;
-  }
+  // Spaceship Exhaust Trail
+  ellipse(spaceshipX + 25, spaceshipY + 105, 25, 25);
+  beginShape();
+  vertex(spaceshipX + 12.5, spaceshipY + 105);
+  vertex(spaceshipX + 20, spaceshipY + 140);
+  vertex(spaceshipX + 25, spaceshipY + 120);
+  vertex(spaceshipX + 30, spaceshipY + 133);
+  vertex(spaceshipX + 37.5, spaceshipY + 105);
+  endShape();
 
-  if(sunGrowing) {
-    sunSize += 0.2;
-  }
-  else {
-    sunSize -= 0.2;
-  }
+  pop();  
+}
 
+function drawPlanets(words, vocal, drum, bass, other) {
   // Rotating Planet 1 around rings
   push(); 
   translate(canvasCentreX, canvasCentreY);
@@ -105,48 +155,9 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   let drumSize = map(drum, 30, 50, 60, 80); // Change size of planet using the 'drum' volume channel
   ellipse(0, 400, drumSize); // Planet 4
   pop();
+}
 
-  // Rotating Spaceship
-  push(); 
-  translate(canvasCentreX, canvasCentreY);
-  rotate(rotationAngle[4]);
-
-  // Spaceship Body
-  ellipse(spaceshipX + 25, spaceshipY, 50, 50);
-  rect(spaceshipX, spaceshipY, 50, 60);
-  quad(spaceshipX + 10, spaceshipY + 60, spaceshipX + 40, spaceshipY + 60, spaceshipX + 35, spaceshipY + 80, spaceshipX + 15, spaceshipY + 80);
-  ellipse(spaceshipX + 25, spaceshipY + 30, 20, 20);
-  line(spaceshipX + 20, spaceshipY + 60, spaceshipX + 20, spaceshipY + 80);
-  line(spaceshipX + 30, spaceshipY + 60, spaceshipX + 30, spaceshipY + 80);
-
-  // Spaceship Exhaust Trail
-  ellipse(spaceshipX + 25, spaceshipY + 105, 25, 25);
-  beginShape();
-  vertex(spaceshipX + 12.5, spaceshipY + 105);
-  vertex(spaceshipX + 20, spaceshipY + 140);
-  vertex(spaceshipX + 25, spaceshipY + 120);
-  vertex(spaceshipX + 30, spaceshipY + 133);
-  vertex(spaceshipX + 37.5, spaceshipY + 105);
-  endShape();
-
-  pop();
-  
-  
-  // Increments angle values
-  rotationAngle[0] += 0.5; // Planet 1
-  rotationAngle[1]++; // Planet 2
-  rotationAngle[2] += 0.7; // Planet 3
-  rotationAngle[3] += 0.2; // Planet 4
-  rotationAngle[4]++; // Spaceship
-
-
-  // Planet transition that will only play once music begins
-  if(planetSize > 0 && counter > 0) {
-    ellipse(canvasCentreX, canvasCentreY, planetSize);
-    planetSize -= 20;
-  }
-
-  // Allows you to track counter value as music is playing 
+function displayCounter(counter) {
   let seconds = counter
   
   if(seconds > 0) {
@@ -154,17 +165,6 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     text(nf(seconds, 3, 2), 20, height-20);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
