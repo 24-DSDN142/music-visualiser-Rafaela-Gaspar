@@ -10,7 +10,12 @@ let lineThickness = 1.5; // Thickness of drawn lines
 let ringSize = 800; // Size of solar system rings
 let sunSize = 140; // Size of sun
 let planetSize = 2500; // Size of initial planet
-let rotationAngle = [0, 0, 0, 0]; // Rotation amounts for each planet
+let rotationAngle = [0, 0, 0, 0, 0]; // Rotation amounts for each planet
+let spaceshipX = -419 // Spaceship x coordinates
+let spaceshipY = -50 // Spaceship y coordinates
+
+
+angleMode(DEGREES); 
 
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   background(0); // Black
@@ -38,7 +43,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     firstRun = false; // Update firstRun so that this code only runs once
   }
 
-  // Draws each star from the array at 125 counter intervals
+  // Draws each star from the array at even counter intervals (until counter is 2500)
   for (let i = 0; i < starAmount; i++) {
     if (counter > i * (2500 / starAmount)) {
       stroke(stars[i].brightness);
@@ -100,12 +105,40 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   let drumSize = map(drum, 30, 50, 60, 80); // Change size of planet using the 'drum' volume channel
   ellipse(0, 400, drumSize); // Planet 4
   pop();
+
+  // Rotating Spaceship
+  push(); 
+  translate(canvasCentreX, canvasCentreY);
+  rotate(rotationAngle[4]);
+
+  // Spaceship Body
+  ellipse(spaceshipX + 25, spaceshipY, 50, 50);
+  rect(spaceshipX, spaceshipY, 50, 60);
+  quad(spaceshipX + 10, spaceshipY + 60, spaceshipX + 40, spaceshipY + 60, spaceshipX + 35, spaceshipY + 80, spaceshipX + 15, spaceshipY + 80);
+  ellipse(spaceshipX + 25, spaceshipY + 30, 20, 20);
+  line(spaceshipX + 20, spaceshipY + 60, spaceshipX + 20, spaceshipY + 80);
+  line(spaceshipX + 30, spaceshipY + 60, spaceshipX + 30, spaceshipY + 80);
+
+  // Spaceship Exhaust Trail
+  ellipse(spaceshipX + 25, spaceshipY + 105, 25, 25);
+  beginShape();
+  vertex(spaceshipX + 12.5, spaceshipY + 105);
+  vertex(spaceshipX + 20, spaceshipY + 140);
+  vertex(spaceshipX + 25, spaceshipY + 120);
+  vertex(spaceshipX + 30, spaceshipY + 133);
+  vertex(spaceshipX + 37.5, spaceshipY + 105);
+  endShape();
+
+  pop();
+  
   
   // Increments angle values
-  rotationAngle[0]++; // Planet 1
-  rotationAngle[1] += 2; // Planet 2
-  rotationAngle[2] += 1.3; // Planet 3
-  rotationAngle[3] += 0.5; // Planet 4
+  rotationAngle[0] += 0.5; // Planet 1
+  rotationAngle[1]++; // Planet 2
+  rotationAngle[2] += 0.7; // Planet 3
+  rotationAngle[3] += 0.2; // Planet 4
+  rotationAngle[4]++; // Spaceship
+
 
   // Planet transition that will only play once music begins
   if(planetSize > 0 && counter > 0) {
