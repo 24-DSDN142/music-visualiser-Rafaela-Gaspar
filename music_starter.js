@@ -15,12 +15,31 @@ let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
 
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
+  colorMode(HSB, 100); // HSB instead of RGB values for colour
   background(0); // Black
   fill(0); // Black
   stroke(255); // White
   strokeWeight(lineThickness);
 
   drawStars(counter); // Draws the stars
+
+  // BUGGY!!!
+  // let colourRingSize = 800;
+  // let colourRingS = map(other, 80, 100, 50, 100);
+  // let colourRingB = map(other, 80, 100, 80, 100);
+
+  // if (other >= 80) {
+
+  //   for (i = 0; i < 2500; i++) {
+  //     push();
+  //     noFill();
+  //     stroke(other, colourRingS, colourRingB);
+  //     ellipse(canvasCentreX, canvasCentreY, colourRingSize);
+  //     pop();  
+  //     colourRingSize += 20;
+  //   }
+
+  // }
 
   // Draws solar system's 4 rings
   for(let i = 0; i < 4; i++) {
@@ -29,7 +48,9 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     noFill();
     ellipse(canvasCentreX, canvasCentreY, circleSize);
     pop();
-  }  
+  }
+
+
 
   drawSun(); // Draws the Sun
   drawPlanets(words, vocal, drum, bass, other); // Draws the planets
