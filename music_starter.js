@@ -10,7 +10,8 @@ let lineThickness = 1.5; // Thickness of drawn lines
 let ringSize = 800; // Size of solar system rings
 let sunSize = 140; // Size of sun
 let planetSize = 2500; // Size of initial planet
-let rotationAngle = [0, 0, 0, 0, 0]; // Array of rotation amounts for each planet
+let rotationAngle = [0, 0, 0, 0, 0]; // Array of rotation speeds for each planet
+let angleIncrement = []; // Array of icrement amounts for each planet's rotation speed
 let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
 
@@ -23,7 +24,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
 
   drawStars(counter); // Draws the stars
 
-  // BUGGY!!!
+  // BUGGY!!! Meant to draw rings as volume channels get to a specific loudness amount
   // let colourRingSize = 800;
   // let colourRingS = map(other, 80, 100, 50, 100);
   // let colourRingB = map(other, 80, 100, 80, 100);
@@ -50,18 +51,10 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     pop();
   }
 
-
-
   drawSun(); // Draws the Sun
   drawPlanets(words, vocal, drum, bass, other); // Draws the planets
   drawSpaceship(); // Draws the spaceship
-
-  // Increments angle values to animate planet rotation
-  rotationAngle[0] += 0.5; // Planet 1
-  rotationAngle[1]++; // Planet 2
-  rotationAngle[2] += 0.7; // Planet 3
-  rotationAngle[3] += 0.2; // Planet 4
-  rotationAngle[4]++; // Spaceship
+  planetRotation(words, vocal, drum, bass, other); // Rotates the planets
 
   // Planet transition that will only play once music begins
   if(planetSize > 0 && counter > 0) {
@@ -70,7 +63,6 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   }
 
   displayCounter(counter); // Allows you to track counter value as music is playing 
-
 }
 
 function drawSun() {
@@ -187,7 +179,20 @@ function displayCounter(counter) {
   }
 }
 
-
+function planetRotation(words, vocal, drum, bass, other) {
+  // Sets increment values for planet rotation animation
+  angleIncrement[0] = map(other, 0, 100, 0.3, 1.7);
+  angleIncrement[1] = map(bass, 0, 100, 1, 2.4);
+  angleIncrement[2] = map(vocal, 0, 100, 0.7, 2.1);
+  angleIncrement[3] = map(drum, 0, 100, 0.1, 1.5);
+  
+  // Increments angle values to animate planet rotation
+  rotationAngle[0] += angleIncrement[0]; // Planet 1
+  rotationAngle[1] += angleIncrement[1]; // Planet 2
+  rotationAngle[2] += angleIncrement[2]; // Planet 3
+  rotationAngle[3] += angleIncrement[3]; // Planet 4
+  rotationAngle[4]++; // Spaceship
+}
 
 
 // ORIGINAL CODE BELOW
