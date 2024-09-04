@@ -15,10 +15,6 @@ let angleIncrement = []; // Array of icrement amounts for each planet's rotation
 let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
 
-
-// let colourRings = []; // Array of coloured rings to be drawn
-
-
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   colorMode(HSB, 100); // HSB instead of RGB values for colour
   background(0); // Black
@@ -27,30 +23,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   strokeWeight(lineThickness);
 
   drawStars(counter); // Draws the stars
-
-  // Extra rings
-  if (counter > 2530 && counter < 5100) {
-    let ringCount = map(other, 70, 100, 0, 4.5, true); // Maps amount of rings to bass value
-    ringCount = pow(ringCount, 4); // exponentially fades the extra rings in
-
-    // Fades the extra rings out
-    if (counter > 5000) {
-      let ringScaler = map(counter, 5000, 5100, 1, 0);
-      ringCount *= ringScaler;
-    }
-
-    // Draw each of the rings (controlled by other value)
-    for(let i = 0; i < ringCount; i++) {
-      let colourRingSize = ringSize + (i * 30);
-      push();
-      noFill();
-      let colourH = random(0, 20); // Randomises ring colour's hue between yellow and red
-      let colourS = random(0, 255); // Randomises ring colour's staturation
-      stroke(colourH, colourS, 255);
-      ellipse(canvasCentreX, canvasCentreY, colourRingSize);
-      pop();
-    }
-  }
+  drawExtraRings(other, counter); // Draws extra rings when the counter is between 2530 and 5100, controlled by 'other' volume channel
 
   // Draws solar system's 4 rings
   for(let i = 0; i < 4; i++) {
@@ -114,7 +87,7 @@ function drawStars(counter) {
     if (counter > i * (2500 / starAmount)) {
       stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
       point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star
-      stars[i].brightness += 0.2; // Increments star brightness  
+      stars[i].brightness += 0.2; // Codiumate-assisted code (array syntax), increments brightness of the stroke
     }
   }
   pop();
@@ -204,6 +177,30 @@ function planetRotation(words, vocal, drum, bass, other) {
   rotationAngle[4]++; // Spaceship
 }
 
+function drawExtraRings(other, counter) {
+  if (counter > 2530 && counter < 5100) {
+    let ringCount = map(other, 70, 100, 0, 4.5, true); // Maps amount of rings to bass value
+    ringCount = pow(ringCount, 4); // exponentially fades the extra rings in
+
+    // Fades the extra rings out
+    if (counter > 5000) {
+      let ringScaler = map(counter, 5000, 5100, 1, 0);
+      ringCount *= ringScaler;
+    }
+
+    // Draw each of the rings (controlled by other value)
+    for(let i = 0; i < ringCount; i++) {
+      let colourRingSize = ringSize + (i * 30);
+      push();
+      noFill();
+      let colourH = random(0, 20); // Randomises ring colour's hue between yellow and red
+      let colourS = random(0, 255); // Randomises ring colour's staturation
+      stroke(colourH, colourS, 255);
+      ellipse(canvasCentreX, canvasCentreY, colourRingSize);
+      pop();
+    }
+  }
+}
 
 // ORIGINAL CODE BELOW
 
