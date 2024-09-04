@@ -15,6 +15,10 @@ let angleIncrement = []; // Array of icrement amounts for each planet's rotation
 let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
 
+
+// let colourRings = []; // Array of coloured rings to be drawn
+
+
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   colorMode(HSB, 100); // HSB instead of RGB values for colour
   background(0); // Black
@@ -24,23 +28,29 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
 
   drawStars(counter); // Draws the stars
 
-  // BUGGY!!! Meant to draw rings as volume channels get to a specific loudness amount
-  // let colourRingSize = 800;
-  // let colourRingS = map(other, 80, 100, 50, 100);
-  // let colourRingB = map(other, 80, 100, 80, 100);
+  // Extra rings
+  if (counter > 2530 && counter < 5100) {
+    let ringCount = map(other, 70, 100, 0, 4.5, true); // Maps amount of rings to bass value
+    ringCount = pow(ringCount, 4); // exponentially fades the extra rings in
 
-  // if (other >= 80) {
+    // Fades the extra rings out
+    if (counter > 5000) {
+      let ringScaler = map(counter, 5000, 5100, 1, 0);
+      ringCount *= ringScaler;
+    }
 
-  //   for (i = 0; i < 2500; i++) {
-  //     push();
-  //     noFill();
-  //     stroke(other, colourRingS, colourRingB);
-  //     ellipse(canvasCentreX, canvasCentreY, colourRingSize);
-  //     pop();  
-  //     colourRingSize += 20;
-  //   }
-
-  // }
+    // Draw each of the rings (controlled by other value)
+    for(let i = 0; i < ringCount; i++) {
+      let colourRingSize = ringSize + (i * 30);
+      push();
+      noFill();
+      let colourH = random(0, 20); // Randomises ring colour's hue between yellow and red
+      let colourS = random(0, 255); // Randomises ring colour's staturation
+      stroke(colourH, colourS, 255);
+      ellipse(canvasCentreX, canvasCentreY, colourRingSize);
+      pop();
+    }
+  }
 
   // Draws solar system's 4 rings
   for(let i = 0; i < 4; i++) {
@@ -94,7 +104,7 @@ function drawStars(counter) {
     for (let i = 0; i < starAmount; i++) { // Create a number of stars equal to starAmount variable
       let starX = random(0, canvasWidth); // Randomise x coordinate
       let starY = random(0, canvasHeight); // Randomise y coordinate
-      stars.push({ x: starX, y: starY, brightness: 0 }); // apply values to stars array
+      stars.push({ x: starX, y: starY, brightness: 0 }); // Codiumate-assisted code - applies values to stars array
     }
     firstRun = false; // Update firstRun so that this code only runs once
   }
@@ -102,8 +112,8 @@ function drawStars(counter) {
   // Draws each star from the array at even counter intervals (until counter is 2500)
   for (let i = 0; i < starAmount; i++) {
     if (counter > i * (2500 / starAmount)) {
-      stroke(stars[i].brightness);
-      point(stars[i].x, stars[i].y); // draws star
+      stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
+      point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star
       stars[i].brightness += 0.2; // Increments star brightness  
     }
   }
