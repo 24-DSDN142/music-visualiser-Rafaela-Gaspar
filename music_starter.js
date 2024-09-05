@@ -83,13 +83,43 @@ function drawStars(counter) {
   }
 
   // Draws each star from the array at even counter intervals (until counter is 2500)
+// if(counter < 2500) {
+//   for (let i = 0; i < starAmount; i++) {
+//     if (counter > i * (2500 / starAmount)) {
+//       stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
+//       point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star
+//       if (stars[i].brightness < 255) {
+//         stars[i].brightness += 0.2; // Increments brightness of the stroke
+//       }
+//     }
+//   }
+// }
+
+//   // Fades each star out one by one
+//   if(counter >= 2500) {
+//     for (let i = 0; i < starAmount; i++) {
+//       stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
+//       point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star  
+//       if (counter >= 2500 + i * (2500 / starAmount)) {
+//         if (stars[i].brightness > 0) {
+//           stars[i].brightness -= 0.2; // Increments brightness of the star's stroke to fade it out
+//         }
+//       }
+//     }    
+//   }
+
   for (let i = 0; i < starAmount; i++) {
-    if (counter > i * (2500 / starAmount)) {
-      stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
-      point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star
-      stars[i].brightness += 0.2; // Codiumate-assisted code (array syntax), increments brightness of the stroke
+    if(stars[i].brightness < 255 && counter > i * (2500 / starAmount)) {
+      stars[i].brightness += 0.2; // Increments brightness of the stroke
     }
+    else if(stars[i].brightness > 0 && counter > 5000 + i * (2500 / starAmount)) {
+      stars[i].brightness -= 0.2; // decrements brightness of the star's stroke to fade it out
+      print(stars[i].brightness);
+    }
+    stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
+    point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star
   }
+
   pop();
 }
 
