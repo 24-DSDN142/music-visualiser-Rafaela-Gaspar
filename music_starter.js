@@ -2,13 +2,13 @@ let canvasCentreX = canvasWidth / 2; // Centre of canvas (x coordinates)
 let canvasCentreY = canvasHeight / 2; // Centre of canvas (y coordinates)
 let sunGrowing = true; // Checks whether the sun is growing or shrinking
 let firstRun = true; // Checks whether run has been run already
-
 let stars = []; // Array of stars to be drawn
 let starAmount = 400; // Number of stars to be drawn
-
 let lineThickness = 1.5; // Thickness of drawn lines
 let ringSize = 800; // Size of solar system rings
 let sunSize = 140; // Size of sun
+let sunColourH = 10; // Sun's Hue (starts at yellow)
+let sunColourS = 0; // Sun's Saturation
 let planetSize = 2500; // Size of initial planet
 let rotationAngle = [0, 0, 0, 0, 0]; // Array of rotation speeds for each planet
 let angleIncrement = []; // Array of icrement amounts for each planet's rotation speed
@@ -34,7 +34,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     pop();
   }
 
-  drawSun(); // Draws the Sun
+  drawSun(counter); // Draws the Sun
   drawPlanets(words, vocal, drum, bass, other); // Draws the planets
   drawSpaceship(); // Draws the spaceship
   planetRotation(words, vocal, drum, bass, other); // Rotates the planets
@@ -48,9 +48,22 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   displayCounter(counter); // Allows you to track counter value as music is playing 
 }
 
-function drawSun() {
+function drawSun(counter) {
   // Sun
+  push();
+  stroke(sunColourH, sunColourS, 100);
   ellipse(canvasCentreX, canvasCentreY, sunSize);
+  pop();
+
+  if (counter > 2000 && counter < 5000 && sunColourS < 100) {
+    sunColourS += 0.1; // Increments sun's saturation to go from white to yellow
+  }
+  else if (counter >= 5000 && counter < 6500 & sunColourH > 0) {
+    sunColourH -= 0.01; // Increments sun's hue to go from yellow to red
+  }
+  else if (counter >= 6500 && sunColourH < 50) {
+    sunColourH += 0.4; // Increments sun's hue to go from red to blue
+  }
 
   // Sun pulsing
   if(sunSize >= 160) {
@@ -77,46 +90,19 @@ function drawStars(counter) {
     for (let i = 0; i < starAmount; i++) { // Create a number of stars equal to starAmount variable
       let starX = random(0, canvasWidth); // Randomise x coordinate
       let starY = random(0, canvasHeight); // Randomise y coordinate
-      stars.push({ x: starX, y: starY, brightness: 0 }); // Codiumate-assisted code - applies values to stars array
+      stars.push({ x: starX, y: starY, brightness: 0 }); // Codiumate-assisted code, applies values to stars array
     }
     firstRun = false; // Update firstRun so that this code only runs once
   }
 
-  // Draws each star from the array at even counter intervals (until counter is 2500)
-// if(counter < 2500) {
-//   for (let i = 0; i < starAmount; i++) {
-//     if (counter > i * (2500 / starAmount)) {
-//       stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
-//       point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star
-//       if (stars[i].brightness < 255) {
-//         stars[i].brightness += 0.2; // Increments brightness of the stroke
-//       }
-//     }
-//   }
-// }
-
-//   // Fades each star out one by one
-//   if(counter >= 2500) {
-//     for (let i = 0; i < starAmount; i++) {
-//       stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
-//       point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star  
-//       if (counter >= 2500 + i * (2500 / starAmount)) {
-//         if (stars[i].brightness > 0) {
-//           stars[i].brightness -= 0.2; // Increments brightness of the star's stroke to fade it out
-//         }
-//       }
-//     }    
-//   }
-
   for (let i = 0; i < starAmount; i++) {
-    if(stars[i].brightness < 255 && counter > i * (2500 / starAmount)) {
-      stars[i].brightness += 0.2; // Increments brightness of the stroke
+    if(counter < 3000 && counter > i * (2500 / starAmount) && stars[i].brightness < 255) {
+      stars[i].brightness += 0.2; // Codiumate-assisted code (array syntax), increments brightness of the stroke
     }
-    else if(stars[i].brightness > 0 && counter > 5000 + i * (2500 / starAmount)) {
-      stars[i].brightness -= 0.2; // decrements brightness of the star's stroke to fade it out
-      print(stars[i].brightness);
+    else if(counter > 4000 + i * (1800 / starAmount) && stars[i].brightness > 0) {
+      stars[i].brightness -= 0.2; // Decrements brightness of the star's stroke to fade it out
     }
-    stroke(stars[i].brightness); // Codiumate-assisted code (array syntax), sets brightness of stroke
+    stroke(stars[i].brightness); // Sets brightness of stroke
     point(stars[i].x, stars[i].y); // Codiumate-assisted code (array syntax), draws star
   }
 
@@ -210,7 +196,7 @@ function planetRotation(words, vocal, drum, bass, other) {
 function drawExtraRings(other, counter) {
   if (counter > 2530 && counter < 5100) {
     let ringCount = map(other, 70, 100, 0, 4.5, true); // Maps amount of rings to bass value
-    ringCount = pow(ringCount, 4); // exponentially fades the extra rings in
+    ringCount = pow(ringCount, 4); // Exponentially fades the extra rings in
 
     // Fades the extra rings out
     if (counter > 5000) {
@@ -218,7 +204,7 @@ function drawExtraRings(other, counter) {
       ringCount *= ringScaler;
     }
 
-    // Draw each of the rings (controlled by other value)
+    // Draws each of the rings (controlled by 'other' value)
     for(let i = 0; i < ringCount; i++) {
       let colourRingSize = ringSize + (i * 30);
       push();
