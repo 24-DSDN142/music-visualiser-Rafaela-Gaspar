@@ -34,6 +34,11 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     pop();
   }
 
+  // Shrinks solar system
+  if (counter > 200) {
+    ringSize -= 7; // Decrements size of solar system to make it slowly disappear behind sun
+  }
+
   drawSun(counter); // Draws the Sun
   drawPlanets(words, vocal, drum, bass, other); // Draws the planets
   drawSpaceship(); // Draws the spaceship
