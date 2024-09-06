@@ -10,10 +10,12 @@ let sunSize = 140; // Size of sun
 let sunColourH = 10; // Sun's Hue (starts at yellow)
 let sunColourS = 0; // Sun's Saturation
 let planetSize = 2500; // Size of initial planet
+let planetsY = [-160, 240, -320, 400]; // Planets y coordinates
 let rotationAngle = [0, 0, 0, 0, 0]; // Array of rotation speeds for each planet
 let angleIncrement = []; // Array of icrement amounts for each planet's rotation speed
 let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
+let spaceshipBrightness = 255; // Spaceship's stroke brightness
 
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   colorMode(HSB, 100); // HSB instead of RGB values for colour
@@ -35,14 +37,14 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   }
 
   // Shrinks solar system
-  if (counter > 200) {
-    ringSize -= 7; // Decrements size of solar system to make it slowly disappear behind sun
+  if (counter > 6700) {
+    ringSize -= 12; // Decrements size of solar system to make it slowly disappear behind sun
   }
 
-  drawSun(counter); // Draws the Sun
-  drawPlanets(words, vocal, drum, bass, other); // Draws the planets
-  drawSpaceship(); // Draws the spaceship
+  drawPlanets(words, vocal, drum, bass, other, counter); // Draws the planets
+  drawSpaceship(counter); // Draws the spaceship
   planetRotation(words, vocal, drum, bass, other); // Rotates the planets
+  drawSun(counter); // Draws the Sun
 
   // Planet transition that will only play once music begins
   if(planetSize > 0 && counter > 0) {
@@ -114,64 +116,87 @@ function drawStars(counter) {
   pop();
 }
 
-function drawSpaceship() {
-  push(); 
-  translate(canvasCentreX, canvasCentreY);
-  rotate(rotationAngle[4]);
-
-  // Spaceship Body
-  ellipse(spaceshipX + 25, spaceshipY, 50, 50);
-  rect(spaceshipX, spaceshipY, 50, 60);
-  quad(spaceshipX + 10, spaceshipY + 60, spaceshipX + 40, spaceshipY + 60, spaceshipX + 35, spaceshipY + 80, spaceshipX + 15, spaceshipY + 80);
-  ellipse(spaceshipX + 25, spaceshipY + 30, 20, 20);
-  line(spaceshipX + 20, spaceshipY + 60, spaceshipX + 20, spaceshipY + 80);
-  line(spaceshipX + 30, spaceshipY + 60, spaceshipX + 30, spaceshipY + 80);
-
-  // Spaceship Exhaust Trail
-  ellipse(spaceshipX + 25, spaceshipY + 105, 25, 25);
-  beginShape();
-  vertex(spaceshipX + 12.5, spaceshipY + 105);
-  vertex(spaceshipX + 20, spaceshipY + 140);
-  vertex(spaceshipX + 25, spaceshipY + 120);
-  vertex(spaceshipX + 30, spaceshipY + 133);
-  vertex(spaceshipX + 37.5, spaceshipY + 105);
-  endShape();
-
-  pop();  
+function drawSpaceship(counter) {
+  if (spaceshipX < 0 && counter < 6900) {
+    push(); 
+    translate(canvasCentreX, canvasCentreY);
+    rotate(rotationAngle[4]);
+  
+    if (counter > 6700) {
+      spaceshipX += 7; // Decrements size of solar system to make it slowly disappear behind sun
+      stroke(spaceshipBrightness);
+      spaceshipBrightness -= 4; // Decrements ship's stroke brightness to create a fade effect
+    }
+  
+    // Spaceship Body
+    ellipse(spaceshipX + 25, spaceshipY, 50, 50);
+    rect(spaceshipX, spaceshipY, 50, 60);
+    quad(spaceshipX + 10, spaceshipY + 60, spaceshipX + 40, spaceshipY + 60, spaceshipX + 35, spaceshipY + 80, spaceshipX + 15, spaceshipY + 80);
+    ellipse(spaceshipX + 25, spaceshipY + 30, 20, 20);
+    line(spaceshipX + 20, spaceshipY + 60, spaceshipX + 20, spaceshipY + 80);
+    line(spaceshipX + 30, spaceshipY + 60, spaceshipX + 30, spaceshipY + 80);
+  
+    // Spaceship Exhaust Trail
+    ellipse(spaceshipX + 25, spaceshipY + 105, 25, 25);
+    beginShape();
+    vertex(spaceshipX + 12.5, spaceshipY + 105);
+    vertex(spaceshipX + 20, spaceshipY + 140);
+    vertex(spaceshipX + 25, spaceshipY + 120);
+    vertex(spaceshipX + 30, spaceshipY + 133);
+    vertex(spaceshipX + 37.5, spaceshipY + 105);
+    endShape();
+  
+    pop();  
+  }
 }
 
-function drawPlanets(words, vocal, drum, bass, other) {
-  // Rotating Planet 1 around rings
-  push(); 
-  translate(canvasCentreX, canvasCentreY);
-  rotate(rotationAngle[0]);
-  let otherSize = map(other, 80, 90, 60, 80); // Change size of planet using the 'other' volume channel
-  ellipse(0, -160, otherSize); // Planet 1
-  pop();
+function drawPlanets(words, vocal, drum, bass, other, counter) {
+  if (counter > 6700 && planetsY[0] < 0) {
+    planetsY[0] += 7;
+  }
+  if (counter > 6700 && planetsY[1] > 0) {
+    planetsY[1] -= 7;
+  }
+  if (counter > 6700 && planetsY[2] < 0) {
+    planetsY[2] += 7;
+  }
+  if (counter > 6700 && planetsY[3] > 0) {
+    planetsY[3] -= 7;
+  }
 
-  // Rotating Planet 2 around rings
-  push(); 
-  translate(canvasCentreX, canvasCentreY);
-  rotate(rotationAngle[1]);
-  let bassSize = map(bass, 70, 80, 60, 80); // Change size of planet using the 'bass' volume channel
-  ellipse(0, 240, bassSize); // Planet 2
-  pop();
+  if (counter < 6900) {
+    // Rotating Planet 1 around rings
+    push(); 
+    translate(canvasCentreX, canvasCentreY);
+    rotate(rotationAngle[0]);
+    let otherSize = map(other, 80, 90, 60, 80); // Change size of planet using the 'other' volume channel
+    ellipse(0, planetsY[0], otherSize); // Planet 1
+    pop();
 
-  // Rotating Planet 3 around rings
-  push(); 
-  translate(canvasCentreX, canvasCentreY);
-  rotate(rotationAngle[2]);
-  let vocalSize = map(vocal, 20, 30, 60, 80); // Change size of planet using the 'vocal' volume channel
-  ellipse(0, -320, vocalSize); // Planet 3
-  pop();
+    // Rotating Planet 2 around rings
+    push(); 
+    translate(canvasCentreX, canvasCentreY);
+    rotate(rotationAngle[1]);
+    let bassSize = map(bass, 70, 80, 60, 80); // Change size of planet using the 'bass' volume channel
+    ellipse(0, planetsY[1], bassSize); // Planet 2
+    pop();
 
-  // Rotating Planet 4 around rings
-  push(); 
-  translate(canvasCentreX, canvasCentreY);
-  rotate(rotationAngle[3]);
-  let drumSize = map(drum, 30, 50, 60, 80); // Change size of planet using the 'drum' volume channel
-  ellipse(0, 400, drumSize); // Planet 4
-  pop();
+    // Rotating Planet 3 around rings
+    push(); 
+    translate(canvasCentreX, canvasCentreY);
+    rotate(rotationAngle[2]);
+    let vocalSize = map(vocal, 20, 30, 60, 80); // Change size of planet using the 'vocal' volume channel
+    ellipse(0, planetsY[2], vocalSize); // Planet 3
+    pop();
+
+    // Rotating Planet 4 around rings
+    push(); 
+    translate(canvasCentreX, canvasCentreY);
+    rotate(rotationAngle[3]);
+    let drumSize = map(drum, 30, 50, 60, 80); // Change size of planet using the 'drum' volume channel
+    ellipse(0, planetsY[3], drumSize); // Planet 4
+    pop();    
+  }
 }
 
 function displayCounter(counter) {
