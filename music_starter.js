@@ -1,32 +1,110 @@
 let canvasCentreX = canvasWidth / 2; // Centre of canvas (x coordinates)
 let canvasCentreY = canvasHeight / 2; // Centre of canvas (y coordinates)
-let sunGrowing = true; // Checks whether the sun is growing or shrinking
 let firstRun = true; // Checks whether run has been run already
+let lineThickness = 1.5; // Thickness of drawn lines
+
 let stars = []; // Array of stars to be drawn
 let starAmount = 400; // Number of stars to be drawn
-let lineThickness = 1.5; // Thickness of drawn lines
+
 let ringSize = 800; // Size of solar system rings
+
+let sunGrowing = true; // Checks whether the sun is growing or shrinking
 let sunSize = 140; // Size of sun
 let sunColourH = 10; // Sun's Hue (starts at yellow)
 let sunColourS = 0; // Sun's Saturation
+
 let planetSize = 2500; // Size of initial planet
 let planetsY = [-160, 240, -320, 400]; // Planets y coordinates
 let rotationAngle = [0, 0, 0, 0, 0]; // Array of rotation speeds for each planet
 let angleIncrement = []; // Array of icrement amounts for each planet's rotation speed
+
 let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
 let spaceshipBrightness = 255; // Spaceship's stroke brightness
 
+let nebulaBrightness = 0; // Nebula's stroke brightness
+let r = 0; // Nebula radius
+let nebulaAngle = 0; // Nebula's angle (polar coordinates)
+let vocal_history = []; // Array of vocal's value history
+
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
+  // Appearance
   colorMode(HSB, 100); // HSB instead of RGB values for colour
   background(0); // Black
   fill(0); // Black
   stroke(255); // White
   strokeWeight(lineThickness);
 
-  drawStars(counter); // Draws the stars
-  drawExtraRings(other, counter); // Draws extra rings when the counter is between 2530 and 5100, controlled by 'other' volume channel
+  // Drawn elements
+  if(counter > 0) { // Prevents elements from being drawn until song is run
+    drawStars(counter); // Draws the stars
+    drawNebula(counter, vocal); // Draws the nebula
+    drawExtraRings(other, counter); // Draws extra rings when the counter is between 2530 and 5100, controlled by 'other' volume channel
+    drawSolarSystem(counter); // Draws the solar system
+    drawPlanets(words, vocal, drum, bass, other, counter); // Draws the planets
+    drawSpaceship(counter); // Draws the spaceship
+    planetRotation(words, vocal, drum, bass, other); // Rotates the planets
+    drawSun(counter); // Draws the Sun
+  }
 
+  // Planet transition that will only play once music begins
+  if(planetSize > 0 && counter > 0) {
+    ellipse(canvasCentreX, canvasCentreY, planetSize);
+    planetSize -= 20;
+  }
+
+  // Allows you to track counter value as music is playing
+  displayCounter(counter);
+}
+
+function drawNebula(counter, vocal) {
+  if (counter > 0 && counter < 7000) {
+    push();
+    translate(canvasCentreX, canvasCentreY);
+    rotate(90); // Nebula starts being drawn at the bottom of the canvas (to hide where the nebula shape begins/ends)
+    angleMode(RADIANS); // Sets angle calculations to radians to allow nebula to be drawn using polar coordinates
+    stroke(nebulaBrightness);
+    noFill(); 
+    addToHistory(vocal_history, vocal); // music_history code to allow the nebula shape to be drawn according to 'vocal' values
+   
+    for (let nebulaSize = 700; nebulaSize < 1100; nebulaSize += 100) { // Draws nebula 4 times, increasing in size by 100 for each iteration
+      beginShape();
+
+      // Code written with the help of The Coding Train's "3.4 Polar Coordinates - The Nature of Code" video (https://www.youtube.com/watch?v=O5wjXoFrau4&t=884s)
+      for (let i = 0; i < 100; i++) { // Draws nebula with 100 vertices
+        let historyVal = vocal_history[vocal_history.length - i]; // length of nebula's vertices
+        r = map(historyVal, 0, 100, nebulaSize, nebulaSize + 300); // Changes nebula's radius depending on 'vocal' values
+        nebulaAngle = map(i, 0, 100, 0, PI * 2); // Maps nebula's angle to current i value (so that the vertexes are drawn evenly in a circle)
+        let x = r * cos(nebulaAngle); // Trigonometry calculation
+        let y = r * sin(nebulaAngle); // Trigonometry calculation
+        vertex(x, y); // Draws each vertex of the nebula
+      }
+      endShape();
+    }
+
+    // Fades Nebula in up to a brightness of 50 (grey)
+    if (counter < 6700 && nebulaBrightness < 50) {
+      nebulaBrightness += 0.1; // Increments brightness
+    }
+
+    // Fades Nebula to black once counter reaches 6700
+    else if (counter > 6700) {
+      nebulaBrightness -= 0.5; // Decrements brightness
+    }
+
+    pop();
+    angleMode(DEGREES); // Resets angle calculations back to degrees
+  }  
+}
+
+function addToHistory(history, d) {
+  history.push(d);
+  if(history.length >= (width-1)/4) {
+    history.shift();
+  }
+}
+
+function drawSolarSystem(counter) {
   // Draws solar system's 4 rings
   for(let i = 0; i < 4; i++) {
     let circleSize = ringSize - (i * 160);
@@ -40,19 +118,6 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   if (counter > 6700) {
     ringSize -= 12; // Decrements size of solar system to make it slowly disappear behind sun
   }
-
-  drawPlanets(words, vocal, drum, bass, other, counter); // Draws the planets
-  drawSpaceship(counter); // Draws the spaceship
-  planetRotation(words, vocal, drum, bass, other); // Rotates the planets
-  drawSun(counter); // Draws the Sun
-
-  // Planet transition that will only play once music begins
-  if(planetSize > 0 && counter > 0) {
-    ellipse(canvasCentreX, canvasCentreY, planetSize);
-    planetSize -= 20;
-  }
-
-  displayCounter(counter); // Allows you to track counter value as music is playing 
 }
 
 function drawSun(counter) {
