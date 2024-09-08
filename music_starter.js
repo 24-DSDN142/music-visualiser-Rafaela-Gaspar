@@ -10,8 +10,9 @@ let ringSize = 800; // Size of solar system rings
 
 let sunGrowing = true; // Checks whether the sun is growing or shrinking
 let sunSize = 140; // Size of sun
-let sunColourH = 10; // Sun's Hue (starts at yellow)
-let sunColourS = 0; // Sun's Saturation
+let sunColourH = 10; // Sun's hue (starts at yellow)
+let sunColourS = 0; // Sun's saturation
+let sunColourB = 100; // Sun's brightness
 
 let planetSize = 2500; // Size of initial planet
 let planetsY = [-160, 240, -320, 400]; // Planets y coordinates
@@ -22,10 +23,19 @@ let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
 let spaceshipBrightness = 255; // Spaceship's stroke brightness
 
+let vocalHistory = []; // Array of vocal's value history
+let drumHistory = []; // Array of drum's value history
+let bassHistory = []; // Array of bass' value history
+let otherHistory = []; // Array of other's value history
+
 let nebulaBrightness = 0; // Nebula's stroke brightness
-let r = 0; // Nebula radius
-let nebulaAngle = 0; // Nebula's angle (polar coordinates)
-let vocal_history = []; // Array of vocal's value history
+let nebulaRadius; // Nebula's radius
+let nebulaAngle; // Nebula vertex's current angle around circle (polar coordinates)
+
+let sunRaysBrightness = 0; // Sun rays' stroke brightness
+let sunRaysRadius; // Sun rays' radius
+let sunRaysAngle; // Sun ray vertex's current angle around circle (polar coordinates)
+let sunRaysLength = -40; // Length of sun rays' lines
 
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   // Appearance
@@ -42,8 +52,9 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     drawExtraRings(other, counter); // Draws extra rings when the counter is between 2530 and 5100, controlled by 'other' volume channel
     drawSolarSystem(counter); // Draws the solar system
     drawPlanets(words, vocal, drum, bass, other, counter); // Draws the planets
-    drawSpaceship(counter); // Draws the spaceship
     planetRotation(words, vocal, drum, bass, other); // Rotates the planets
+    drawSpaceship(counter); // Draws the spaceship
+    drawSunRays(words, vocal, drum, bass, other, counter); // Draws the sun rays
     drawSun(counter); // Draws the Sun
   }
 
@@ -57,6 +68,79 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   displayCounter(counter);
 }
 
+function drawSunRays(words, vocal, drum, bass, other, counter) {
+  if (counter > 6900) {
+    push();
+    translate(canvasCentreX, canvasCentreY);
+    rotate(90); // Sun rays start being drawn at the bottom of the canvas (to hide where the sun rays begin/end)
+    angleMode(RADIANS); // Sets angle calculations to radians to allow nebula to be drawn using polar coordinates
+    stroke(sunRaysBrightness);
+
+    addToHistory(vocalHistory, vocal); // music_history code to allow the sun rays to be drawn according to 'vocal' values
+    addToHistory(drumHistory, drum); // music_history code to allow the sun rays to be drawn according to 'drum' values
+    addToHistory(bassHistory, bass); // music_history code to allow the sun rays to be drawn according to 'bass' values
+    addToHistory(otherHistory, other); // music_history code to allow the sun rays to be drawn according to 'other' values
+
+    // Sun rays controlled by 'vocal'
+    for (let i = 0; i <= 12; i++) {
+      let historyValue = vocalHistory[vocalHistory.length - i]; // length of sun rays' 'vocal' vertices
+      sunRaysRadius = map(historyValue, 0, 40, 5, 10); // Changes sun rays' radius depending on 'other' values
+      sunRaysAngle = map(i, 0, 10, 0, PI * 2); // Maps sun rays' angle to current i value (so that the vertexes are drawn evenly in a circle)
+      let x = sunRaysRadius * cos(sunRaysAngle); // Converts polar coordinates to cartesian coordinates
+      let y = sunRaysRadius * sin(sunRaysAngle); // Converts polar coordinates to cartesian coordinates
+      line(x * sunRaysLength, y * sunRaysLength, x, y); // Draws lines
+      ellipse(x * sunRaysLength, y * sunRaysLength, 5, 5);
+    }
+
+    // Sun rays controlled by 'drum'
+    for (let i = 0; i <= 50; i++) {
+      let historyValue = drumHistory[drumHistory.length - i]; // length of sun rays' 'drum' vertices
+      sunRaysRadius = map(historyValue, 0, 60, 9, 5); // Changes sun rays' radius depending on 'other' values
+      sunRaysAngle = map(i, 0, 50, 0, PI * 2); // Maps sun rays' angle to current i value (so that the vertexes are drawn evenly in a circle)
+      let x = sunRaysRadius * cos(sunRaysAngle); // Converts polar coordinates to cartesian coordinates
+      let y = sunRaysRadius * sin(sunRaysAngle); // Converts polar coordinates to cartesian coordinates
+      line(x * sunRaysLength, y * sunRaysLength, x, y); // Draws lines
+      ellipse(x * sunRaysLength, y * sunRaysLength, 3, 3);
+    }    
+
+    // Sun rays controlled by 'bass'
+    for (let i = 0; i <= 30; i++) {
+      let historyValue = bassHistory[bassHistory.length - i]; // length of sun rays' 'bass' vertices
+      sunRaysRadius = map(historyValue, 0, 40, 5, 20); // Changes sun rays' radius depending on 'other' values
+      sunRaysAngle = map(i, 0, 30, 0, PI * 2); // Maps sun rays' angle to current i value (so that the vertexes are drawn evenly in a circle)
+      let x = sunRaysRadius * cos(sunRaysAngle); // Converts polar coordinates to cartesian coordinates
+      let y = sunRaysRadius * sin(sunRaysAngle); // Converts polar coordinates to cartesian coordinates
+      line(x * sunRaysLength, y * sunRaysLength, x, y); // Draws lines
+      ellipse(x * sunRaysLength, y * sunRaysLength, 10, 10);
+    }  
+
+    // Sun rays controlled by 'other'
+    for (let i = 0; i <= 20; i++) {
+      let historyValue = otherHistory[otherHistory.length - i]; // length of sun rays' 'other' vertices
+      sunRaysRadius = map(historyValue, 50, 100, 5, 15); // Changes sun rays' radius depending on 'other' values
+      sunRaysAngle = map(i, 0, 20, 0, PI * 2); // Maps sun rays' angle to current i value (so that the vertexes are drawn evenly in a circle)
+      let x = sunRaysRadius * cos(sunRaysAngle); // Converts polar coordinates to cartesian coordinates
+      let y = sunRaysRadius * sin(sunRaysAngle); // Converts polar coordinates to cartesian coordinates
+      line(x * sunRaysLength, y * sunRaysLength, x, y); // Draws lines
+      ellipse(x * sunRaysLength, y * sunRaysLength, 8, 8);
+    }
+
+    // Fades sun rays in
+    if (counter > 7000 && counter < 7900 && sunRaysBrightness < 255) {
+      sunRaysBrightness += 0.5; // Increments brightness
+      print(sunRaysBrightness);
+    }
+
+    // Fades sun rays out
+    else if (counter > 7900) {
+      sunRaysBrightness -= 0.5; // Decrements brightness
+    }
+
+    pop();
+    angleMode(DEGREES); // Resets angle calculations back to degrees
+  }    
+}
+
 function drawNebula(counter, vocal) {
   if (counter > 0 && counter < 7000) {
     push();
@@ -65,18 +149,19 @@ function drawNebula(counter, vocal) {
     angleMode(RADIANS); // Sets angle calculations to radians to allow nebula to be drawn using polar coordinates
     stroke(nebulaBrightness);
     noFill(); 
-    addToHistory(vocal_history, vocal); // music_history code to allow the nebula shape to be drawn according to 'vocal' values
+
+    addToHistory(vocalHistory, vocal); // music_history code to allow the nebula shape to be drawn according to 'vocal' values
    
     for (let nebulaSize = 700; nebulaSize < 1100; nebulaSize += 100) { // Draws nebula 4 times, increasing in size by 100 for each iteration
       beginShape();
 
       // Code written with the help of The Coding Train's "3.4 Polar Coordinates - The Nature of Code" video (https://www.youtube.com/watch?v=O5wjXoFrau4&t=884s)
-      for (let i = 0; i < 100; i++) { // Draws nebula with 100 vertices
-        let historyVal = vocal_history[vocal_history.length - i]; // length of nebula's vertices
-        r = map(historyVal, 0, 100, nebulaSize, nebulaSize + 300); // Changes nebula's radius depending on 'vocal' values
+      for (let i = 0; i <= 100; i++) { // Draws nebula with 100 vertices
+        let historyValue = vocalHistory[vocalHistory.length - i]; // length of nebula's vertices
+        nebulaRadius = map(historyValue, 0, 100, nebulaSize, nebulaSize + 300); // Changes nebula's radius depending on 'vocal' values
         nebulaAngle = map(i, 0, 100, 0, PI * 2); // Maps nebula's angle to current i value (so that the vertexes are drawn evenly in a circle)
-        let x = r * cos(nebulaAngle); // Trigonometry calculation
-        let y = r * sin(nebulaAngle); // Trigonometry calculation
+        let x = nebulaRadius * cos(nebulaAngle); // Converts polar coordinates to cartesian coordinates
+        let y = nebulaRadius * sin(nebulaAngle); // Converts polar coordinates to cartesian coordinates
         vertex(x, y); // Draws each vertex of the nebula
       }
       endShape();
@@ -123,7 +208,7 @@ function drawSolarSystem(counter) {
 function drawSun(counter) {
   // Sun
   push();
-  stroke(sunColourH, sunColourS, 100);
+  stroke(sunColourH, sunColourS, sunColourB);
   ellipse(canvasCentreX, canvasCentreY, sunSize);
   pop();
 
@@ -131,10 +216,13 @@ function drawSun(counter) {
     sunColourS += 0.1; // Increments sun's saturation to go from white to yellow
   }
   else if (counter >= 5000 && counter < 6500 & sunColourH > 0) {
-    sunColourH -= 0.01; // Increments sun's hue to go from yellow to red
+    sunColourH -= 0.01; // Decrements sun's hue to go from yellow to red
   }
   else if (counter >= 6500 && sunColourH < 50) {
     sunColourH += 0.4; // Increments sun's hue to go from red to blue
+  }
+  else if (counter > 8200) {
+    sunColourB -= 0.5; // Decrements sun's brightness to fade out
   }
 
   // Sun pulsing
