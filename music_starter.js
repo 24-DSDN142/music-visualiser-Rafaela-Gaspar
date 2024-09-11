@@ -31,22 +31,12 @@ let sunColourB = 100; // Sun's brightness
 let planetSize1 = 2500; // Size of intro planet
 let planetSize2 = 0; // Size of outro planet
 let planetsY = [-160, 240, -320, 400]; // Planets y coordinates
-let rotationAngle = [0, 0, 0, 0, 0]; // Array of rotation speeds for each planet
+let rotationAngle = [0, 0, 0, 0, 0]; // Array of rotation speeds for the planets and the spaceship
 let angleIncrement = []; // Array of icrement amounts for each planet's rotation speed
 
 let spaceshipX = -419 // Spaceship x coordinates
 let spaceshipY = -50 // Spaceship y coordinates
 let spaceshipBrightness = 255; // Spaceship's stroke brightness
-
-// displayCounter(counter); // REMOVE BEFORE HAND-IN!!!!!!!!!!!!!!
-// function displayCounter(counter) {
-//   let seconds = counter
-  
-//   if(seconds > 0) {
-//     textSize(60);
-//     text(nf(seconds, 3, 2), 20, height-20);
-//   }
-// }
 
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   // Appearance
@@ -69,8 +59,6 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     drawSun(counter); // Draws the Sun
     drawPlanetTransition(counter); // Draws the planet intro and outro transitions
   }
-  // Allows you to track counter value as music is playing
-  // displayCounter(counter); // REMOVE BEFORE HAND-IN!!!!!!!!!!!!!!
 }
 
 function drawStars(counter) {
